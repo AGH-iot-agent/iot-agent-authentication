@@ -13,3 +13,12 @@ spring:
 jwt:
   secret: "${JWT_SECRET:supersecretkey}"
   expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
