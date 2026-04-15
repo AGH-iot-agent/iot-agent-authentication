@@ -2,9 +2,9 @@ server:
   port: 8089
 spring:
   datasource:
-    url: jdbc:postgresql://iot-agent-database:5432/iot_agent
-    username: gte
-    password: gte
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://iot-agent-database:5432/iot_agent}
+    username: ${SPRING_DATASOURCE_USERNAME:gte}
+    password: ${SPRING_DATASOURCE_PASSWORD:gte}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
