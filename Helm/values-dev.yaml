@@ -188,7 +188,9 @@ globalEnvs: []
 globalEnvsSecondary: []
 
 # A tertiary source for env variables (eg: used for a specific env (eg: dev, or staging))
-extraEnvs: []
+extraEnvs:
+  - name: SPRING_DATASOURCE_URL
+    value: "jdbc:postgresql://iot-agent-postgres-postgresql:5432/iot_agent"
 
 # stdin and tty status
 tty: false
