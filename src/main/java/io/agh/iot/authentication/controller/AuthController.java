@@ -6,8 +6,11 @@ import io.agh.iot.authentication.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody Map<String, String> req, HttpServletResponse response) {
+    public ResponseEntity<Object> register(@RequestBody Map<String, String> req, HttpServletRequest request, HttpServletResponse response) {
         String username = req.get(USERNAME_FIELD);
         String email = req.get("email");
         String password = req.get("password");
@@ -43,16 +46,12 @@ public class AuthController {
         }
         User user = userService.register(username, email, password);
         String token = jwtService.generateToken(user.getUsername());
-        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie(TOKEN_COOKIE, token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24); // 1 dzień
-        response.addCookie(cookie);
+        response.addHeader(HttpHeaders.SET_COOKIE, buildTokenCookie(request, token, Duration.ofDays(1)).toString());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody Map<String, String> req, HttpServletResponse response) {
+    public ResponseEntity<Object> login(@RequestBody Map<String, String> req, HttpServletRequest request, HttpServletResponse response) {
         String username = req.get(USERNAME_FIELD);
         String password = req.get("password");
         if (username == null || password == null) {
@@ -62,11 +61,7 @@ public class AuthController {
             .filter(user -> userService.checkPassword(user, password))
             .<ResponseEntity<Object>>map(user -> {
                 String token = jwtService.generateToken(user.getUsername());
-                jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie(TOKEN_COOKIE, token);
-                cookie.setHttpOnly(true);
-                cookie.setPath("/");
-                cookie.setMaxAge(60 * 60 * 24); // 1 dzień
-                response.addCookie(cookie);
+                response.addHeader(HttpHeaders.SET_COOKIE, buildTokenCookie(request, token, Duration.ofDays(1)).toString());
                 return ResponseEntity.ok().build();
             })
             .orElseGet(() -> ResponseEntity.status(401).body("Błędny login lub hasło"));
@@ -88,12 +83,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(TOKEN_COOKIE, "");
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        response.addHeader(HttpHeaders.SET_COOKIE, buildTokenCookie(request, "", Duration.ZERO).toString());
         return ResponseEntity.noContent().build();
     }
 
@@ -120,5 +111,59 @@ public class AuthController {
         }
 
         return null;
+    }
+
+    private ResponseCookie buildTokenCookie(HttpServletRequest request, String token, Duration maxAge) {
+        ResponseCookie.ResponseCookieBuilder cookieBuilder = ResponseCookie.from(TOKEN_COOKIE, token)
+            .httpOnly(true)
+            .path("/")
+            .sameSite("Lax")
+            .maxAge(maxAge);
+
+        String cookieDomain = resolveCookieDomain(request);
+        if (cookieDomain != null) {
+            cookieBuilder.domain(cookieDomain);
+        }
+
+        if (isSecureRequest(request)) {
+            cookieBuilder.secure(true);
+        }
+
+        return cookieBuilder.build();
+    }
+
+    private String resolveCookieDomain(HttpServletRequest request) {
+        String host = request.getHeader("X-Forwarded-Host");
+        if (host == null || host.isBlank()) {
+            host = request.getHeader("Host");
+        }
+        if (host == null || host.isBlank()) {
+            return null;
+        }
+
+        String normalizedHost = host.split(",")[0].trim();
+        int portSeparatorIndex = normalizedHost.indexOf(':');
+        if (portSeparatorIndex >= 0) {
+            normalizedHost = normalizedHost.substring(0, portSeparatorIndex);
+        }
+
+        if (normalizedHost.equals("localhost") || normalizedHost.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
+            return null;
+        }
+
+        String[] parts = normalizedHost.split("\\.");
+        if (parts.length < 2) {
+            return null;
+        }
+
+        return parts[parts.length - 2] + "." + parts[parts.length - 1];
+    }
+
+    private boolean isSecureRequest(HttpServletRequest request) {
+        String forwardedProto = request.getHeader("X-Forwarded-Proto");
+        if (forwardedProto != null && !forwardedProto.isBlank()) {
+            return "https".equalsIgnoreCase(forwardedProto);
+        }
+        return request.isSecure();
     }
 }

@@ -191,6 +191,12 @@ globalEnvsSecondary: []
 extraEnvs:
   - name: SPRING_DATASOURCE_URL
     value: "jdbc:postgresql://iot-agent-postgres-postgresql:5432/iot_agent"
+  - name: SPRING_DATASOURCE_USERNAME
+    value: "gte"
+  - name: SPRING_DATASOURCE_PASSWORD
+    value: "gte"
+  - name: JWT_SECRET
+    value: "supersecretkey"
 
 # stdin and tty status
 tty: false
