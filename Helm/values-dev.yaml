@@ -215,12 +215,12 @@ livenessProbe:
   # httpGet uses scheme, path and port (below)
   # tcpSocket uses port (below)
   # exec uses command (below)
-  probeType: httpGet
+  probeType: tcpSocket
 
   # parameters for probes
   scheme: HTTP
   path: /actuator/health/liveness
-  port: default-service
+  port: 8089
   command:
     - ls -la /
 
@@ -238,12 +238,12 @@ readinessProbe:
   # httpGet uses scheme, path and port (below)
   # tcpSocket uses port (below)
   # exec uses command (below)
-  probeType: httpGet
+  probeType: tcpSocket
 
   # parameters for probes
   scheme: HTTP
   path: /actuator/health/readiness
-  port: default-service
+  port: 8089
   command:
     - ls -la /
 
