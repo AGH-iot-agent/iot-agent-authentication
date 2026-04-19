@@ -119,6 +119,11 @@ public class AuthController {
             .path("/")
             .sameSite("Lax")
             .maxAge(maxAge);
+        }
+
+    @GetMapping("/health")
+    public ResponseEntity<?> health() {
+        return ResponseEntity.ok(Map.of("status", "UP"));
 
         String cookieDomain = resolveCookieDomain(request);
         if (cookieDomain != null) {
