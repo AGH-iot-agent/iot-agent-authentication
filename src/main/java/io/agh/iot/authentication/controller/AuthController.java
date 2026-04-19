@@ -124,17 +124,6 @@ public class AuthController {
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         return ResponseEntity.ok(Map.of("status", "UP"));
-
-        String cookieDomain = resolveCookieDomain(request);
-        if (cookieDomain != null) {
-            cookieBuilder.domain(cookieDomain);
-        }
-
-        if (isSecureRequest(request)) {
-            cookieBuilder.secure(true);
-        }
-
-        return cookieBuilder.build();
     }
 
     private String resolveCookieDomain(HttpServletRequest request) {
