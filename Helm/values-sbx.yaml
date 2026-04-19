@@ -149,7 +149,7 @@ service:
   type: ClusterIP
   port: 80
   targetPort: 8089
-  name: default-service
+  name: http
   # allocateLoadBalancerNodePorts: false
   # externalTrafficPolicy: Local
   additionalPorts: []
@@ -162,10 +162,7 @@ additionalPorts: []
   #   protocol: TCP
 
 # Additional pod annotations
-podAnnotations:
-  service_name: "iot-agent-authentication"
-  iotag_service: "iot-agent-authentication"
-  iotag_env: "sbx"
+podAnnotations: {}
   # tick: "1528451892"
 
 # If you're using Kubernetes 1.20+ you'll want to enable this, this uses the new common label scheme
