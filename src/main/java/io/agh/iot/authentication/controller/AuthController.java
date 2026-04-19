@@ -119,7 +119,8 @@ public class AuthController {
             .path("/")
             .sameSite("Lax")
             .maxAge(maxAge);
-        }
+        return cookieBuilder.build();
+    }
 
     @GetMapping("/health")
     public ResponseEntity<?> health() {
