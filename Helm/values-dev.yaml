@@ -176,7 +176,12 @@ podAnnotations:
 usingNewRecommendedLabels: false
 
 # Additional labels put onto anything that can be labelled (pods, services)
-labels: {}
+labels: 
+  app.kubernetes.io/name: "iot-agent-authentication"
+  app.kubernetes.io/instance: "iot-agent-authentication-dev"
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/part-of: "iot-agent"
+  app.kubernetes.io/managed-by: "helm"
 
 # This enables the "default" label we automatically put everywhere (app: <name>)
 labelsEnableDefault: true
