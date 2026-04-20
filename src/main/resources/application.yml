@@ -1,5 +1,6 @@
 server:
   port: 8089
+
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://iot-agent-database:5432/iot_agent}
@@ -10,16 +11,15 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-jwt:
-  secret: "${JWT_SECRET:supersecretkey}"
-  expiration: 86400000
-
-spring:
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8080/realms/master
+
+jwt:
+  secret: "${JWT_SECRET:supersecretkey}"
+  expiration: 86400000
 
 management:
   endpoints:
