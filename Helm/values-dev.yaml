@@ -230,7 +230,6 @@ livenessProbe:
   command:
     - ls -la /
 
-
 # readinessProbes are used to determine when a container is ready to start accepting traffic
 readinessProbe:
   enabled: true
