@@ -119,6 +119,11 @@ public class AuthController {
             .path("/")
             .sameSite("Lax")
             .maxAge(maxAge);
+
+        String domain = resolveCookieDomain(request);
+        if (domain != null) {
+            cookieBuilder.domain("." + domain);
+        }
         return cookieBuilder.build();
     }
 
