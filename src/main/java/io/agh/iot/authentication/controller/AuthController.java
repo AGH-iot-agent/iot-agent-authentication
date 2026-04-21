@@ -85,11 +85,12 @@ public class AuthController {
                 .compact();
                 
         ResponseCookie cookie = ResponseCookie.from("token", token)
-                .httpOnly(true)
-                .path("/")
-                .maxAge(Duration.ofMillis(jwtExpirationMs))
-                .sameSite("Lax")
-                .build();
+            .httpOnly(true)
+            .path("/")
+            .domain(".iotag-dev.com")
+            .maxAge(Duration.ofMillis(jwtExpirationMs))
+            .sameSite("Lax")
+            .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok(Map.of("token", token));
