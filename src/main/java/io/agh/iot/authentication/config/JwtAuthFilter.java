@@ -20,6 +20,20 @@ import java.util.Collections;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+        private static final java.util.List<String> WHITELIST = java.util.List.of(
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/health",
+            "/actuator/health",
+            "/actuator/health/readiness",
+            "/actuator/health/liveness"
+        );
+
+        @Override
+        protected boolean shouldNotFilter(HttpServletRequest request) {
+            String uri = request.getRequestURI();
+            return WHITELIST.stream().anyMatch(uri::startsWith);
+        }
     @Value("${jwt.secret}")
     private String jwtSecret;
 
