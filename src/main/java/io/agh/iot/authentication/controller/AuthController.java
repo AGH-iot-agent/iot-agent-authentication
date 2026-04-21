@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,14 +37,19 @@ public class AuthController {
     public AuthController(UserService userService) {
         this.userService = userService;
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(HttpServletRequest request) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+        return ResponseEntity.ok(Map.of("username", auth.getName()));
+    }
+
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         return ResponseEntity.ok(Map.of("status", "UP"));
-    }
-
-    @GetMapping("/debug/version")
-    public String version() {
-        return "VERSION-2026-04-21-TEST";
     }
 
     @PostMapping("/register")
