@@ -70,54 +70,14 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<Object> me(HttpServletRequest request) {
         String token = extractTokenFromCookies(request);
-        if (token == null) {
-            return ResponseEntity.status(401).body("Brak tokenu");
-        }
-
-        try {
-            String username = jwtService.extractUsername(token);
-            return ResponseEntity.ok(Map.of(USERNAME_FIELD, username));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Nieprawidłowy token");
-        }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        response.addHeader(HttpHeaders.SET_COOKIE, buildTokenCookie(request, "", Duration.ZERO).toString());
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/validate")
-    public ResponseEntity<Object> validate(@RequestParam String token) {
-        try {
-            String username = jwtService.extractUsername(token);
-            return ResponseEntity.ok(Map.of(USERNAME_FIELD, username));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Nieprawidłowy token");
-        }
-    }
-
-    private String extractTokenFromCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-
-        for (Cookie cookie : cookies) {
-            if (TOKEN_COOKIE.equals(cookie.getName())) {
-                return cookie.getValue();
+        @RestController
+        @RequestMapping("/api/auth")
+        public class AuthController {
+            @GetMapping("/health")
+            public ResponseEntity<?> health() {
+                return ResponseEntity.ok(Map.of("status", "UP"));
             }
         }
-
-        return null;
-    }
-
-    private ResponseCookie buildTokenCookie(HttpServletRequest request, String token, Duration maxAge) {
-        ResponseCookie.ResponseCookieBuilder cookieBuilder = ResponseCookie.from(TOKEN_COOKIE, token)
-            .httpOnly(true)
-            .path("/")
-            .sameSite("Lax")
             .maxAge(maxAge);
 
         String domain = resolveCookieDomain(request);
