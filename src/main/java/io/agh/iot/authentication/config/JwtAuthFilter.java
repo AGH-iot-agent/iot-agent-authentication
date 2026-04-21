@@ -27,8 +27,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
-        // Pozwól na rejestrację i logowanie bez autoryzacji, inne /api/auth/* mogą być chronione
-        if ("/api/auth/register".equals(path) || "/api/auth/login".equals(path) || "/api/auth/health".equals(path)) {
+        String method = request.getMethod();
+        System.out.println("JwtAuthFilter: " + method + " " + path);
+        // Pozwól na rejestrację i logowanie bez autoryzacji, nawet jeśli path zawiera dodatkowe znaki
+        if ((method.equalsIgnoreCase("POST") && path.toLowerCase().contains("/api/auth/register")) ||
+            (method.equalsIgnoreCase("POST") && path.toLowerCase().contains("/api/auth/login")) ||
+            path.equals("/api/auth/health")) {
+            System.out.println("JwtAuthFilter: przepuszczam " + method + " " + path);
             filterChain.doFilter(request, response);
             return;
         }
