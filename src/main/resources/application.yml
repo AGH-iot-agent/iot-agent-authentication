@@ -11,11 +11,7 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://iot-agent-auth-dev.iotag-dev.com/realms/master
+
 
 jwt:
   secret: "${JWT_SECRET:supersecretkey}"
