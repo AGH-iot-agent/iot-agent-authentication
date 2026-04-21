@@ -38,15 +38,6 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<?> me(HttpServletRequest request) {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
-            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
-        }
-        return ResponseEntity.ok(Map.of("username", auth.getName()));
-    }
-
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         return ResponseEntity.ok(Map.of("status", "UP"));
