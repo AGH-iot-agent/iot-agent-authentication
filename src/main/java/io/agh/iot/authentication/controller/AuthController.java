@@ -43,6 +43,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
+            System.out.println("[DEBUG] /api/auth/register hit, payload: " + payload);
         String username = payload.get("username");
         String password = payload.get("password");
         String email = payload.get("email");
