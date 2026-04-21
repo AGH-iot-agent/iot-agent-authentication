@@ -1,36 +1,4 @@
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> payload, HttpServletResponse response) {
-        String username = payload.get("username");
-        String password = payload.get("password");
-        String email = payload.get("email");
-        if (username == null || password == null || email == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Missing credentials"));
-        }
-        if (userService.findByUsername(username).isPresent()) {
-            return ResponseEntity.status(409).body(Map.of("error", "Username already exists"));
-        }
-        try {
-            userService.register(username, email, password);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Registration failed"));
-        }
-        // Automatyczne logowanie po rejestracji
-        String token = Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes())
-                .compact();
-        ResponseCookie cookie = ResponseCookie.from("token", token)
-                .httpOnly(true)
-                .path("/")
-                .maxAge(Duration.ofMillis(jwtExpirationMs))
-                .sameSite("Lax")
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return ResponseEntity.ok(Map.of("token", token));
-    }
-package io.agh.iot.authentication.controller;
+
 
 import io.agh.iot.authentication.model.User;
 import io.agh.iot.authentication.service.UserService;
