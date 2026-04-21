@@ -41,6 +41,11 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("status", "UP"));
     }
 
+    @GetMapping("/debug/version")
+    public String version() {
+        return "VERSION-2026-04-21-TEST";
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
         System.out.println("REGISTER HIT");
