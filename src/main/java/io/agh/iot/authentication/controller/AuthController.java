@@ -43,7 +43,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
-            System.out.println("[DEBUG] /api/auth/register hit, payload: " + payload);
         String username = payload.get("username");
         String password = payload.get("password");
         String email = payload.get("email");
@@ -62,25 +61,30 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> payload, HttpServletResponse response) {
         String username = payload.get("username");
         String password = payload.get("password");
+
         if (username == null || password == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "Missing credentials"));
         }
+
         var userOpt = userService.findByUsername(username);
         if (userOpt.isEmpty() || !userService.checkPassword(userOpt.get(), password)) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
+
         String token = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes())
                 .compact();
+                
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .path("/")
                 .maxAge(Duration.ofMillis(jwtExpirationMs))
                 .sameSite("Lax")
                 .build();
+
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok(Map.of("token", token));
     }

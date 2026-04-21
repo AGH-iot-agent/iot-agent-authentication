@@ -34,6 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String uri = request.getRequestURI();
             return WHITELIST.stream().anyMatch(uri::startsWith);
         }
+        
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -42,12 +43,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String path = request.getRequestURI();
         String method = request.getMethod();
-        System.out.println("JwtAuthFilter: " + method + " " + path);
-        // Pozwól na rejestrację i logowanie bez autoryzacji, nawet jeśli path zawiera dodatkowe znaki
+
         if ((method.equalsIgnoreCase("POST") && path.toLowerCase().contains("/api/auth/register")) ||
             (method.equalsIgnoreCase("POST") && path.toLowerCase().contains("/api/auth/login")) ||
             path.equals("/api/auth/health")) {
-            System.out.println("JwtAuthFilter: przepuszczam " + method + " " + path);
             filterChain.doFilter(request, response);
             return;
         }

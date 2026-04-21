@@ -80,7 +80,7 @@ istio:
       - iot-agent-authentication-dev.iotag-dev.com
     # Gateways list, if empty chart auto-selects istio-system/istio-ingressgateway when present
     gateways:
-      - istio-system/istio-ingressgateway
+      - istio-system/iotag-gateway 
     # Optional full HTTP spec override. If empty, chart creates a default route
     http:
       - match:
