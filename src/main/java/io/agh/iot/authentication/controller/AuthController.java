@@ -1,4 +1,4 @@
-
+package io.agh.iot.authentication.controller;
 
 import io.agh.iot.authentication.model.User;
 import io.agh.iot.authentication.service.UserService;
