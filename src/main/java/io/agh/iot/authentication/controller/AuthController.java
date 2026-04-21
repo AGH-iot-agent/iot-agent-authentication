@@ -41,6 +41,22 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("status", "UP"));
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
+        String username = payload.get("username");
+        String password = payload.get("password");
+        String email = payload.get("email");
+
+        if (username == null || password == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Missing credentials"));
+        }
+        if (userService.findByUsername(username).isPresent()) {
+            return ResponseEntity.status(409).body(Map.of("error", "User already exists"));
+        }
+        User user = userService.register(username, email, password);
+        return ResponseEntity.ok(Map.of("id", user.getId(), "username", user.getUsername()));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> payload, HttpServletResponse response) {
         String username = payload.get("username");
