@@ -207,26 +207,16 @@ envFrom: []
 # This enables the deprecated memory kibibytes env variables for backwards compatibility. TODO: Remove from future release.
 usingMemoryKibiBytesEnvs: false
 
-# livenessProbes are used to determine when to restart a container
 livenessProbe:
   enabled: true
-  # For the liveness probe we'll wait a full 2 minutes, just incase this service takes a while to start-up
   initialDelaySeconds: 120
   periodSeconds: 10
   timeoutSeconds: 9
   successThreshold: 1
   failureThreshold: 3
-
-  # Specify either httpGet, tcpSocket or exec
-  # httpGet uses scheme, path and port (below)
-  # tcpSocket uses port (below)
-  # exec uses command (below)
   probeType: httpGet
-
-  # parameters for probes
   scheme: HTTP
   path: /actuator/health/liveness
-  port: 8089
   command:
     - ls -la /
 
@@ -238,14 +228,7 @@ readinessProbe:
   timeoutSeconds: 4
   successThreshold: 2
   failureThreshold: 2
-
-  # Specify either httpGet, tcpSocket or exec
-  # httpGet uses scheme, path and port (below)
-  # tcpSocket uses port (below)
-  # exec uses command (below)
   probeType: httpGet
-
-  # parameters for probes
   scheme: HTTP
   path: /actuator/health/readiness
   port: 8089
