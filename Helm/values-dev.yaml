@@ -80,9 +80,18 @@ istio:
       - iot-agent-authentication-dev.iotag-dev.com
     # Gateways list, if empty chart auto-selects istio-system/istio-ingressgateway when present
     gateways:
-      - istio-system/iotag-gateway 
+      - istio-system/istio-ingressgateway
     # Optional full HTTP spec override. If empty, chart creates a default route
     http:
+      - match:
+          - uri:
+              prefix: /api/auth
+        route:
+          - destination:
+              host: iot-agent-authentication.iotag-dev.svc.cluster.local
+              port:
+                number: 80
+
       - match:
           - uri:
               prefix: /
