@@ -24,7 +24,6 @@ priorityClassName: ""
 # See: https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/
 shareProcessNamespace: false
 
-# Image repository location (override if needed)
 image:
   # Which image to release (NOTE: ONLY SPECIFY IF YOU ARE DEPLOYING EXTERNALLY, eg from dockerhub)
   tag: ""
@@ -73,11 +72,11 @@ istio:
     protocol: HTTP
   virtualService:
     enabled: true
-    # If we want to  the name, RECOMMEND YOU DO NOT DO THIS UNLESS YOU NEED, it has a sane default
+    # If we want to override the name, RECOMMEND YOU DO NOT DO THIS UNLESS YOU NEED, it has a sane default
     name: "iot-agent-authentication"
     annotations: {}
     hosts:
-      - iot-agent-authentication-dev.iotag-dev.com
+      - iot-agent-authentication-sbx.iotag-sbx.com
     # Gateways list, if empty chart auto-selects istio-system/istio-ingressgateway when present
     gateways:
       - istio-system/istio-ingressgateway
@@ -85,19 +84,10 @@ istio:
     http:
       - match:
           - uri:
-              prefix: /api/auth
-        route:
-          - destination:
-              host: iot-agent-authentication.iotag-dev.svc.cluster.local
-              port:
-                number: 80
-
-      - match:
-          - uri:
               prefix: /
         route:
           - destination:
-              host: iot-agent-authentication.iotag-dev.svc.cluster.local
+              host: iot-agent-authentication.iotag-sbx.svc.cluster.local
               port:
                 number: 80
     # http: []
@@ -127,7 +117,7 @@ ingress:
   pathType: ImplementationSpecific # or Prefix
   annotations: {}
   hosts:
-    - host: iot-agent-authentication-dev.iotag-dev.com
+    - host: iot-agent-authentication-sbx.iotag-sbx.com
       paths:
         - /
   tls: []
@@ -147,7 +137,7 @@ ingress_secondary:
   pathType: ImplementationSpecific # or Prefix
   annotations: {}
   hosts:
-    - host: iot-agent-authentication-dev.iotag-dev.com
+    - host: chart-example.local
       paths:
         - /
   tls: []
@@ -238,6 +228,7 @@ livenessProbe:
   port: 8089
   command:
     - ls -la /
+
 
 # readinessProbes are used to determine when a container is ready to start accepting traffic
 readinessProbe:
@@ -342,7 +333,7 @@ global:
   image:
     tag: ""
   # This can be used Gitlab CI and helm automatically to set our URIs based on namespace
-  namespace: "iotag-dev"
+  namespace: "iotag-sbx"
 
 sidecar:
   enabled: false
