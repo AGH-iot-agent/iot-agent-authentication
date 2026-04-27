@@ -30,7 +30,7 @@ jobs:
     uses: AGH-iot-agent/common-pipeline/.github/workflows/common-pipeline.yml@main
     secrets: inherit
     with:
-      service_name: iot-agent-alert-api
+      service_name: iot-agent-authentication
       project_type: maven
       java_version: "21"
       values_file: ${{ needs.set-env.outputs.values_file }}
