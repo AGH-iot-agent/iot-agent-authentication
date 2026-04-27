@@ -220,7 +220,7 @@ livenessProbe:
   # httpGet uses scheme, path and port (below)
   # tcpSocket uses port (below)
   # exec uses command (below)
-  probeType: httpGet
+  probeType: tcpSocket
 
   # parameters for probes
   scheme: HTTP
@@ -243,7 +243,7 @@ readinessProbe:
   # httpGet uses scheme, path and port (below)
   # tcpSocket uses port (below)
   # exec uses command (below)
-  probeType: httpGet
+  probeType: tcpSocket
 
   # parameters for probes
   scheme: HTTP
