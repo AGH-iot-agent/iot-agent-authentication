@@ -225,7 +225,7 @@ livenessProbe:
   # parameters for probes
   scheme: HTTP
   path: /actuator/health/liveness
-  port: default-service
+  port: 8089
   command:
     - ls -la /
 
@@ -248,7 +248,7 @@ readinessProbe:
   # parameters for probes
   scheme: HTTP
   path: /actuator/health/readiness
-  port: default-service
+  port: 8089
   command:
     - ls -la /
 
