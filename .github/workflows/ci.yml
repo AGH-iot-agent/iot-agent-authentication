@@ -2,18 +2,37 @@ name: CI
 
 on:
   push:
-    branches: [ main, feat/IOTAG-01-agent-authentication]
+    branches: [ main ]
   pull_request:
-    branches: [ main, feat/IOTAG-01-agent-authentication]
+    branches: [ main ]
 
 jobs:
+  set-env:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    outputs:
+      values_file: ${{ steps.vars.outputs.values_file }}
+      namespace: ${{ steps.vars.outputs.namespace }}
+    steps:
+      - name: Set environment variables
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "values_file=Helm/values-sbx.yaml" >> $GITHUB_OUTPUT
+            echo "namespace=iotag-sbx" >> $GITHUB_OUTPUT
+          else
+            echo "values_file=Helm/values-dev.yaml" >> $GITHUB_OUTPUT
+            echo "namespace=iotag-dev" >> $GITHUB_OUTPUT
+          fi
+
   pipeline:
-    uses: AGH-iot-agent/common-pipeline/.github/workflows/common-pipeline.yml@feat/IOTAG-01-common-pipeline
+    needs: set-env
+    uses: AGH-iot-agent/common-pipeline/.github/workflows/common-pipeline.yml@main
     secrets: inherit
     with:
-      service_name: iot-agent-authentication
+      service_name: iot-agent-alert-api
       project_type: maven
       java_version: "21"
-      values_file: ${{ github.event_name == 'pull_request' && 'Helm/values-sbx.yaml' || 'Helm/values-dev.yaml' }}
+      values_file: ${{ needs.set-env.outputs.values_file }}
+      namespace: ${{ needs.set-env.outputs.namespace }}
       chart_type: deployment
-      namespace: ${{ github.event_name == 'pull_request' && 'iotag-sbx' || 'iotag-dev' }}

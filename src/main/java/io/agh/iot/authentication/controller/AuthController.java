@@ -38,6 +38,27 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response, HttpServletRequest request) {
+        // Usuwanie cookie JWT
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+            .httpOnly(true)
+            .path("/")
+            .domain(".iotag-dev.com")
+            .maxAge(0)
+            .sameSite("Lax")
+            .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        // Unieważnienie sesji Spring Security (jeśli istnieje)
+        SecurityContextHolder.clearContext();
+        if (request.getSession(false) != null) {
+            request.getSession(false).invalidate();
+        }
+
+        return ResponseEntity.ok(Map.of("message", "Logged out"));
+    }
+
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         return ResponseEntity.ok(Map.of("status", "UP"));
