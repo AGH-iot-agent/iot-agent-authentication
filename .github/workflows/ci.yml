@@ -18,7 +18,7 @@ on:
 
 jobs:
   set-env:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     outputs:
       values_file: ${{ steps.vars.outputs.values_file }}
@@ -30,6 +30,9 @@ jobs:
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "values_file=Helm/values-sbx.yaml" >> $GITHUB_OUTPUT
             echo "namespace=iotag-sbx" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "values_file=Helm/values-${{ github.event.inputs.namespace }}.yaml" >> $GITHUB_OUTPUT
+            echo "namespace=${{ github.event.inputs.namespace }}" >> $GITHUB_OUTPUT
           else
             echo "values_file=Helm/values-dev.yaml" >> $GITHUB_OUTPUT
             echo "namespace=iotag-dev" >> $GITHUB_OUTPUT
