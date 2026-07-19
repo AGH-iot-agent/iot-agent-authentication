@@ -5,7 +5,25 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: 'Target namespace'
+        required: true
+        default: 'iotag-sbx'
+        type: choice
+        options:
+          - iotag-dev
+          - iotag-sbx
+      values_file:
+        description: 'Helm values file to use'
+        required: true
+        default: 'Helm/values-sbx.yaml'
+        type: choice
+        options:
+          - Helm/values-dev.yaml
+          - Helm/values-sbx.yaml
+          
 jobs:
   set-env:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
