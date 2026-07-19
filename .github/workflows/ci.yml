@@ -31,8 +31,10 @@ jobs:
             echo "values_file=Helm/values-sbx.yaml" >> $GITHUB_OUTPUT
             echo "namespace=iotag-sbx" >> $GITHUB_OUTPUT
           elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "values_file=Helm/values-${{ github.event.inputs.namespace }}.yaml" >> $GITHUB_OUTPUT
-            echo "namespace=${{ github.event.inputs.namespace }}" >> $GITHUB_OUTPUT
+            ns="${{ github.event.inputs.namespace }}"
+            env_suffix="${ns#iotag-}"
+            echo "values_file=Helm/values-${env_suffix}.yaml" >> $GITHUB_OUTPUT
+            echo "namespace=${ns}" >> $GITHUB_OUTPUT
           else
             echo "values_file=Helm/values-dev.yaml" >> $GITHUB_OUTPUT
             echo "namespace=iotag-dev" >> $GITHUB_OUTPUT
